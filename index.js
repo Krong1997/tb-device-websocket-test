@@ -1,5 +1,4 @@
-const express = require('express')
-const SocketServer = require('ws')
+const WebSocket = require('ws')
 const {
   deviceList,
   JWTtoken,
@@ -18,7 +17,7 @@ function closeConnection(webSocket, message) {
   webSocket.close();
 }
 deviceList.forEach(device => {
-  const webSocket = new SocketServer(`ws://${host}:${port}/api/ws/plugins/telemetry?token=${JWTtoken}`);
+  const webSocket = new WebSocket(`ws://${host}:${port}/api/ws/plugins/telemetry?token=${JWTtoken}`);
   const entityId = device.id;
   let time = 0;
 
