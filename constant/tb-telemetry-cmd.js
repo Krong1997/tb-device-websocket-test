@@ -1,15 +1,11 @@
-const telemetryCmd = (entityId) => ({
-  tsSubCmds: [
-    {
-      entityType: "DEVICE",
-      entityId: entityId,
-      scope: "LATEST_TELEMETRY",
-      cmdId: 10
-    }
-  ],
-  historyCmds: [],
-  attrSubCmds: []
-})
+const telemetryCmd = (entityArr) => {
+  if(!Array.isArray(entityArr)) throw new Error('entityArr is not array');
+  return {
+    tsSubCmds: entityArr,
+    historyCmds: [],
+    attrSubCmds: []
+  }
+}
 
 module.exports = {
   telemetryCmd
