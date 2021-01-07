@@ -3,11 +3,13 @@ const {
   deviceList,
   JWTtoken,
   host,
-  port
+  port,
+  onlyTotal
 } = require('./constant/env');
 const {
   telemetryCmd
 } = require('./constant/tb-telemetry-cmd');
+const timeArr = [];
 
 if (!Array.isArray(deviceList)) throw new Error('device list must be array');
 if (!JWTtoken) console.log("Invalid JWT token!");
@@ -16,10 +18,11 @@ function closeConnection(webSocket, message) {
   console.log(message);
   webSocket.close();
 }
-deviceList.forEach(device => {
+
+deviceList.forEach((device, idx) => {
   const webSocket = new WebSocket(`ws://${host}:${port}/api/ws/plugins/telemetry?token=${JWTtoken}`);
   const entityId = device.id;
-  let time = 0;
+  timeArr[idx] = 0;
 
   if (!entityId) {
     console.log("Invalid device id!");
@@ -35,7 +38,12 @@ deviceList.forEach(device => {
   webSocket.onmessage = function (event) {
     const received_msg = JSON.parse(event.data);
     if (received_msg.errorCode > 0) return closeConnection(webSocket, `${device.name}: ${received_msg.errorMsg}`);
-    console.log(device.name, "message is received: ", received_msg.data, time++);
+    timeArr[idx] += 1;
+    if (onlyTotal) {
+      console.log("total", device.name, timeArr.reduce((accu, curr) => accu + curr));
+    } else {
+      console.log(device.name, "message is received: ", received_msg.data, timeArr[idx]);
+    }
   };
 
   webSocket.onclose = function () {
